@@ -45,6 +45,8 @@ public class BaseTest {
 
   protected static Logger LOGGER = Logger.getLogger("com.bitplan.radolan");
 
+  String tmpDir = System.getProperty("java.io.tmpdir");
+
   /**
    * check if we are in the Travis-CI environment
    * 
@@ -54,6 +56,4 @@ public class BaseTest {
     String user = System.getProperty("user.name");
     return user.equals("travis");
   }
-
-  String tmpDir = System.getProperty("java.io.tmpdir");
 }

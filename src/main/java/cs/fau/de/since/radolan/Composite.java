@@ -227,6 +227,8 @@ public class Composite extends ProjectionImpl implements RadarImage, GeoProjecti
     return ForecastTime;
   }
 
+  public ZonedDateTime getCaptureTime() { return CaptureTime;  }
+
   public void setForecastTime(ZonedDateTime forecastTime) {
     ForecastTime = forecastTime;
   }
