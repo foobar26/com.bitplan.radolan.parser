@@ -24,6 +24,7 @@
 package com.bitplan.radolan;
 
 import com.bitplan.dateutils.DateUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -34,8 +35,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.logging.Level;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 /**
  * test the known urls handling
@@ -86,6 +87,8 @@ public class TestKnownUrls extends BaseTest {
             + connection.getClass().getName());
       }
     } catch (IOException exception) {
+      assumeThat("Too many connections", exception.getMessage(), CoreMatchers.not(CoreMatchers.containsString("421")));
+      exception.printStackTrace();
       return false;
     }
   }
@@ -141,6 +144,8 @@ public class TestKnownUrls extends BaseTest {
       String agohString = KnownUrl.shortFormat.format(agohDate);
       String url = KnownUrl.getUrl("sf", agohString);
       boolean ok = pingURL(url, TIME_OUT);
+      if (!ok)
+        System.out.println(url);
       if (debug)
         LOGGER.log(Level.INFO, String.format("%3d h:%s %s %s", hours,
             ok ? "✓" : " ❌", agohString, url));
