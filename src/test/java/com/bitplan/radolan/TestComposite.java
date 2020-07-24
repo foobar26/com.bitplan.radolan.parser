@@ -38,6 +38,12 @@ public class TestComposite {
         Composite composite = new Composite(new FileInputStream(wxFile));
         System.out.print(composite.getCaptureTime().plusHours(2) + ": ");
         testPositionForComposite(composite, 9.5F);
+        wxFile = new File(
+                "src/test/data/wx/raa01-wx_10000-2007240915-dwd---bin");
+        assertTrue(wxFile.exists());
+        composite = new Composite(new FileInputStream(wxFile));
+        System.out.print(composite.getCaptureTime().plusHours(2) + ": ");
+        testPositionForComposite(composite, -32.5F);
     }
 
     @Test
