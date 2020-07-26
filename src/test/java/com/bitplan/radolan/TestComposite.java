@@ -24,7 +24,7 @@ public class TestComposite {
     @Test
     public void testCompositeWXRecent() throws Throwable {
         System.out.println("---Test WX Recent---");
-        Composite composite = new Composite("https://opendata.dwd.de/weather/radar/composit/wx/raa01-wx_10000-2007240915-dwd---bin");
+        Composite composite = new Composite("https://opendata.dwd.de/weather/radar/composit/wx/raa01-wx_10000-latest-dwd---bin");
         System.out.print(composite.getCaptureTime().plusHours(2) + ": ");
         testPositionForComposite(composite, null);
     }
@@ -44,6 +44,14 @@ public class TestComposite {
         composite = new Composite(new FileInputStream(wxFile));
         System.out.print(composite.getCaptureTime().plusHours(2) + ": ");
         testPositionForComposite(composite, -32.5F);
+        // todo check why this gets -94.5
+        wxFile = new File(
+                "src/test/data/wx/raa01-wx_10000-2007252215-dwd---bin");
+        assertTrue(wxFile.exists());
+        composite = new Composite(new FileInputStream(wxFile));
+        System.out.print(composite.getCaptureTime().plusHours(2) + ": ");
+        testPositionForComposite(composite, 33.5F);
+
     }
 
     @Test
