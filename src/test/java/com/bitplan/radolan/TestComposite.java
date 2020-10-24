@@ -92,12 +92,47 @@ public class TestComposite {
         expectedValues.put(120, -32.5F);
         testFX(bin, expectedValues);
     }
-
+/*
     @Test
     public void testCompositeFXRecent() throws Throwable{
         System.out.println("---Test FX Recent---");
         InputStream inputStream = new URL("https://opendata.dwd.de/weather/radar/composit/fx/FX_LATEST.tar.bz2").openStream();
         testFX(inputStream, null);
+    }
+
+*/
+
+    @Test
+    public void testCompositeWN() throws Throwable {
+        System.out.println("---Test WN---");
+        File fxFile = new File(
+                "src/test/data/wn/WN_LATEST_010.bz2");
+        assertTrue(fxFile.exists());
+        InputStream inputStream = new FileInputStream(fxFile);
+        byte[] lbytes = IOUtils.toByteArray(inputStream);
+        inputStream.close();
+        ByteArrayInputStream bin = new ByteArrayInputStream(lbytes);
+        testWN(bin, -32.5F);
+    }
+
+    private void testWN(InputStream inputStream, Float expectedValue) throws Throwable {
+        BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
+        int BUFFER_SIZE = 5000;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        BufferedOutputStream bufout = new BufferedOutputStream(bout, BUFFER_SIZE);
+        int count = 0;
+        while ((count = gzipIn.read(buffer, 0, BUFFER_SIZE)) != -1) {
+            bufout.write(buffer, 0, count);
+        }
+        bufout.close();
+        bout.close();
+        ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+        Composite comp = new Composite(bin);
+        testPositionForComposite(comp, expectedValue);
+        bin.close();
+        inputStream.close();
+        gzipIn.close();
     }
 
     private void testFX(InputStream inputStream, Map<Integer, Float> expectedValues) throws Throwable {

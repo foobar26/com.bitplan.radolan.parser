@@ -288,7 +288,7 @@ public class Composite extends ProjectionImpl implements RadarImage, GeoProjecti
       read(inputStream);
       init();
     } finally {
-      inputStream.close();
+      if (inputStream != null) inputStream.close();
     }
   }
 
@@ -300,7 +300,7 @@ public class Composite extends ProjectionImpl implements RadarImage, GeoProjecti
       read(inputstream);
       init();
     } finally {
-      inputstream.close();
+      if (inputstream != null) inputstream.close();
     }
   }
  
