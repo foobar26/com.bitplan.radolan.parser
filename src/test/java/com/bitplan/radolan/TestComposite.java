@@ -21,14 +21,14 @@ import static org.junit.Assert.*;
 
 public class TestComposite {
 
-    @Test
+/*    @Test
     public void testCompositeWXRecent() throws Throwable {
         System.out.println("---Test WX Recent---");
         Composite composite = new Composite("https://opendata.dwd.de/weather/radar/composit/wx/raa01-wx_10000-latest-dwd---bin");
         System.out.print(composite.getCaptureTime().plusHours(2) + ": ");
         testPositionForComposite(composite, null);
     }
-
+*/
     @Test
     public void testCompositeWX() throws Throwable {
         System.out.println("---Test WX Recent---");
@@ -90,7 +90,7 @@ public class TestComposite {
         expectedValues.put(110, -32.5F);
         expectedValues.put(115, -32.5F);
         expectedValues.put(120, -32.5F);
-        testFX(bin, expectedValues);
+        testTarBz(bin, expectedValues);
     }
 /*
     @Test
@@ -101,21 +101,60 @@ public class TestComposite {
     }
 
 */
+    @Test
+    public void testCompositeRVRecent() throws Throwable {
+        System.out.println("---Test RV Recent---");
+        InputStream inputStream = new URL("https://opendata.dwd.de/weather/radar/composit/rv/DE1200_RV_LATEST.tar.bz2").openStream();
+        testTarBzRV(inputStream, null);
+    }
+
+    @Test
+    public void testCompositeWNRecent() throws Throwable {
+        System.out.println("---Test WN Recent---");
+        InputStream inputStream = new URL("https://opendata.dwd.de/weather/radar/composit/wn/WN_LATEST.tar.bz2").openStream();
+        testTarBz(inputStream, null);
+    }
 
     @Test
     public void testCompositeWN() throws Throwable {
         System.out.println("---Test WN---");
         File fxFile = new File(
-                "src/test/data/wn/WN_LATEST_010.bz2");
+                "src/test/data/wn/WN_LATEST.tar.bz2");
         assertTrue(fxFile.exists());
         InputStream inputStream = new FileInputStream(fxFile);
         byte[] lbytes = IOUtils.toByteArray(inputStream);
         inputStream.close();
         ByteArrayInputStream bin = new ByteArrayInputStream(lbytes);
-        testWN(bin, -32.5F);
+        Map<Integer, Float> expectedValues = new HashMap<>();
+        expectedValues.put(0, 25.7F);
+        expectedValues.put(5, 26.7F);
+        expectedValues.put(10, 25.900002F);
+        expectedValues.put(15, 25.2F);
+        expectedValues.put(20, 20.2F);
+        expectedValues.put(25, 22.3F);
+        expectedValues.put(30, 20.0F);
+        expectedValues.put(35, 20.3F);
+        expectedValues.put(40, 18.8F);
+        expectedValues.put(45, 15.599998F);
+        expectedValues.put(50, 16.2F);
+        expectedValues.put(55, 15.200001F);
+        expectedValues.put(60, 20.0F);
+        expectedValues.put(65, 13.599998F);
+        expectedValues.put(70, 5.9000015F);
+        expectedValues.put(75, 7.700001F);
+        expectedValues.put(80, 15.299999F);
+        expectedValues.put(85, 5.700001F);
+        expectedValues.put(90, -32.5F);
+        expectedValues.put(95, -32.5F);
+        expectedValues.put(100, -32.5F);
+        expectedValues.put(105, -32.5F);
+        expectedValues.put(110, 12.799999F);
+        expectedValues.put(115, 10.0F);
+        expectedValues.put(120, -32.5F);
+        testTarBz(bin, expectedValues);
     }
 
-    private void testWN(InputStream inputStream, Float expectedValue) throws Throwable {
+    private void testBz(InputStream inputStream, Float expectedValue) throws Throwable {
         BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
         int BUFFER_SIZE = 5000;
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -135,7 +174,7 @@ public class TestComposite {
         gzipIn.close();
     }
 
-    private void testFX(InputStream inputStream, Map<Integer, Float> expectedValues) throws Throwable {
+    private void testTarBz(InputStream inputStream, Map<Integer, Float> expectedValues) throws Throwable {
         BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
         int BUFFER_SIZE = 5000;
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -148,6 +187,40 @@ public class TestComposite {
                 String[] parts = StringUtils.split(entry.getName(), "_");
                 int filePrediction = Integer.parseInt(parts[1]);
                 LocalDateTime ldt = LocalDateTime.ofInstant(KnownUrl.shortFormat.parse(entry.getName().substring(2,12)).toInstant(),
+                        ZoneOffset.of("+4"));
+                ldt = ldt.plusMinutes(filePrediction);
+                System.out.print(ldt.toString() + ": ");
+                int count = 0;
+                while ((count = tarIn.read(buffer, 0, BUFFER_SIZE)) != -1) {
+                    bufout.write(buffer, 0, count);
+                }
+                bufout.close();
+                bout.close();
+                ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+                Composite comp = new Composite(bin);
+                Float expectedValue = null;
+                if (expectedValues != null)
+                    expectedValue = expectedValues.get(filePrediction);
+                testPositionForComposite(comp, expectedValue);
+                bin.close();
+            }
+        }
+        inputStream.close();
+        gzipIn.close();
+    }
+    private void testTarBzRV(InputStream inputStream, Map<Integer, Float> expectedValues) throws Throwable {
+        BZip2CompressorInputStream gzipIn = new BZip2CompressorInputStream(inputStream);
+        int BUFFER_SIZE = 5000;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)) {
+            TarArchiveEntry entry;
+            while ((entry = (TarArchiveEntry) tarIn.getNextEntry()) != null) {
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                BufferedOutputStream bufout = new BufferedOutputStream(bout, BUFFER_SIZE);
+                System.out.println("Entry: " + entry.getName());
+                String[] parts = StringUtils.split(entry.getName(), "_");
+                int filePrediction = Integer.parseInt(parts[2]);
+                LocalDateTime ldt = LocalDateTime.ofInstant(KnownUrl.shortFormat.parse(entry.getName().substring(9,19)).toInstant(),
                         ZoneOffset.of("+4"));
                 ldt = ldt.plusMinutes(filePrediction);
                 System.out.print(ldt.toString() + ": ");

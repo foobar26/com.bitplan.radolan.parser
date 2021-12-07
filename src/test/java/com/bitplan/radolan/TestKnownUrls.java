@@ -150,7 +150,7 @@ public class TestKnownUrls extends BaseTest {
         LOGGER.log(Level.INFO, String.format("%3d h:%s %s %s", hours,
             ok ? "✓" : " ❌", agohString, url));
       if (hours>48)
-        assertTrue(url.startsWith("ftp"));
+        assertTrue(url.startsWith("http"));
       if (!ok)
         fails++;
     }
