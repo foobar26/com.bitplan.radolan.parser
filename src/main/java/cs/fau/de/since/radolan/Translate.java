@@ -129,8 +129,8 @@ public class Translate {
           , 43.8736, 18.2536 // N, E
       );
     case ultraExtendedNationalGrid: // described in [5]
-    return new CornerPoints(55.8571, 1.4379 // N, E
-            , 45.6845, 16.5901 // N, E
+    return new CornerPoints(55.86584289, 1.435612143 // N, E
+            , 45.68358331, 16.60186543 // N, E
     );
     default:
 
