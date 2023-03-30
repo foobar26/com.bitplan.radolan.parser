@@ -36,7 +36,8 @@ import com.bitplan.geo.IPoint;
  */
 public class Translate {
   // Polarstereographische Projektion
-  public static final double earthRadius = 6370.04; // R (km)
+  public static final double earthRadius = 6371.00867; // R (km)
+//  public static final double earthRadius = 6370.04; // R (km)
   public static final double junctionNorth = 60.0; // phi0 60.0° N
   public static final double junctionEast = 10.0; // lamda0 10.0° E
 
@@ -129,9 +130,12 @@ public class Translate {
           , 43.8736, 18.2536 // N, E
       );
     case ultraExtendedNationalGrid: // described in [5]
-    return new CornerPoints(55.86584289, 1.435612143 // N, E
-            , 45.68358331, 16.60186543 // N, E
-    );
+      return new CornerPoints(55.8571, 1.4379 // N, E
+              , 45.6845, 16.5901 // N, E
+      );
+/*    return new CornerPoints(55.86208711, 1.463301510 // N, E
+            , 45.68460578, 16.58086935 // N, E
+    ); */
     default:
 
     }
