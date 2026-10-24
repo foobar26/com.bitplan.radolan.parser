@@ -131,6 +131,7 @@ public class Composite extends ProjectionImpl implements RadarImage, GeoProjecti
 
 
   public byte bytes[];
+  private boolean hdf5; // true if read from an HDF5 file
   public String header;
 
   private Statistics statistics;
@@ -343,6 +344,12 @@ public class Composite extends ProjectionImpl implements RadarImage, GeoProjecti
    */
   public void read(InputStream inputStream) throws Exception {
     bytes = CachedUrl.readBytes(inputStream);
+    if (Hdf5Reader.isHdf5(bytes)) {
+      // DWD HDF5 (ODIM_H5) composite - already fully read here
+      hdf5 = true;
+      Hdf5Reader.read(this, bytes);
+      return;
+    }
     StringBuffer headerBuffer = new StringBuffer();
     int pos = 0;
     // read until 0x03 is found or we are way into the binary 2 x typical width
@@ -369,6 +376,9 @@ public class Composite extends ProjectionImpl implements RadarImage, GeoProjecti
    * @throws Throwable
    */
   public void parseData() throws Throwable {
+    if (hdf5) {
+      return; // data has been read together with the header
+    }
     Data.getInstance().parseData(this);
   }
 

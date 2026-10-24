@@ -46,6 +46,13 @@
     <dependencies>
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <!-- reads the HDF5 composites DWD delivers since 2024 -->
+        <dependency>
+            <groupId>io.jhdf</groupId>
+            <artifactId>jhdf</artifactId>
+            <version>0.6.10</version>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
